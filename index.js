@@ -99,7 +99,13 @@ app.post('/api/getMyItems', async (req, res) => {
     res.status(500).json({ error: error.message, success: false });
   }
 });
-
+app.get('/api/sample', async (req, res) => {
+  try {
+    res.json({ message: "Sample endpoint working", success: true });
+  } catch (error) {
+    res.status(500).json({ error: error.message, success: false });
+  }
+})
 // Gemini Recipe Endpoint (Fixed)
 app.post("/api/getRecipe", async (req, res) => {
   try {
