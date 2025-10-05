@@ -83,6 +83,17 @@ app.post('/api/addItems', async (req, res) => {
   }
 });
 
+app.get('/api/deleteItem/:id', async (req, res) => {
+  try {
+    await Items.findByIdAndDelete(req.params.id);
+    console.log("Deleted item with ID:", req.params.id);
+    res.json({ message: "Item deleted successfully", success: true });
+  }
+  catch (error) {
+    res.status(500).json({ message: "Error deleting item", success: false, error: error.message });
+  }
+});
+
 // Get User Items
 app.post('/api/getMyItems', async (req, res) => {
   try {
@@ -137,7 +148,8 @@ app.post("/api/getRecipe", async (req, res) => {
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer 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`, // ✅ secure key
+        
+        "Authorization": `Bearer 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`, // ✅ secure key
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
@@ -147,7 +159,7 @@ app.post("/api/getRecipe", async (req, res) => {
     });
 
     const result = await response.json();
-
+    console.log("Grok response:", result);
     return res.json({
       groceryList,
       recipe: result.choices[0].message.content
