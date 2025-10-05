@@ -149,11 +149,11 @@ app.post("/api/getRecipe", async (req, res) => {
       method: "POST",
       headers: {
         
-        "Authorization": `Bearer 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`, // ✅ secure key
+        "Authorization": `Bearer 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`, // ✅ secure key
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "x-ai/grok-4-fast:free",
+        model: "gpt-4o",
         messages: [{ role: "user", content: prompt }]
       })
     });
