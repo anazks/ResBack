@@ -149,7 +149,7 @@ app.post("/api/getRecipe", async (req, res) => {
       method: "POST",
       headers: {
         
-        "Authorization": `Bearer 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`, // ✅ secure key
+        "Authorization": `Bearer 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`, // ✅ secure key
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
