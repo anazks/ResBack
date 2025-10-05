@@ -5,6 +5,9 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 const db = require('./Config/Db');
 const userModel = require('./models/userModel');
 const Items = require('./models/Items');
+require('dotenv').config();
+const { GoogleGenAI } = require("@google/genai");
+
 
 dotenv.config();
 
@@ -118,51 +121,67 @@ app.get('/api/sample', async (req, res) => {
   }
 })
 // Gemini Recipe Endpoint (Fixed)
+
 app.post("/api/getRecipe", async (req, res) => {
+  const ai = new GoogleGenAI({});
+
   try {
     const { userEmail } = req.body;
     const {foodType} = req.body;
-    console.log("Received userEmail:", req.body.foodType);
+    console.log("Received foodtype:", req.body.foodType);
     if (!userEmail) {
       return res.status(400).json({ message: "Missing userEmail" });
     }
-
     // Get items from DB
     const items = await Items.find({ email: userEmail });
 
     if (!items.length) {
       return res.json({ message: "No items found in your grocery list" });
     }
+  // async function main() {
+    
+  //   console.log(response.text);
+  // }
 
+  // main();
     // Build grocery list string from DB
-    const groceryList = items
+ 
+       const groceryList = items
       .map(i => `${i.itemname} (${i.quantity})`)
       .join(", ");
-
-    // Create prompt for Grok
-    const prompt = `Here is my grocery list: ${groceryList}. 
+             const prompt = `Here is my grocery list: ${groceryList}. 
     Please suggest a recipe (or multiple) that I can cook using only these ingredients. 
     Write the recipe in simple steps for ${foodType}.`;
-
-    // Call Grok API
-    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        
-        "Authorization": `Bearer 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`, // ✅ secure key
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        model: "gpt-4o",
-        messages: [{ role: "user", content: prompt }]
-      })
+  const responsenew = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: prompt,
     });
 
-    const result = await response.json();
-    console.log("Grok response:", result);
+    const recipe = responsenew.candidates?.[0]?.content?.parts?.[0]?.text || "No recipe generated";
+
+    // let recepe3 = responsenew.
+    // Create prompt for Grok
+
+
+    // Call Grok API
+    // const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    //   method: "POST",
+    //   headers: {
+        
+    //     "Authorization": `Bearer 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`, // ✅ secure key
+    //     "Content-Type": "application/json"
+    //   },
+    //   body: JSON.stringify({
+    //     model: "gpt-4o",
+    //     messages: [{ role: "user", content: prompt }]
+    //   })
+    // });
+// recipe: result.choices[0].message.content
+    // const result = await response.json();
+    // console.log("Grok response:", result);
     return res.json({
       groceryList,
-      recipe: result.choices[0].message.content
+      recipe
     });
 
   } catch (err) {
